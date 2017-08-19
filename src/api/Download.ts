@@ -28,25 +28,12 @@ export class Download {
         return new Promise((resolve, reject) => {
             let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
                           `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
+
+            let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+            let saveFolderPath = path.dirname(saveFilePath);
+
             this.spr.get(restUrl, { encoding: null })
                 .then(response => {
-                    let saveFilePath = path.resolve(saveTo);
-                    let originalFileName = decodeURIComponent(spRelativeFilePath).split('/').pop();
-
-                    try {
-                        if (fs.lstatSync(saveFilePath).isDirectory()) {
-                            saveFilePath = path.join(saveFilePath, originalFileName);
-                        }
-                    } catch (e) {
-                        //
-                    }
-
-                    if (path.parse(saveFilePath).ext !== path.parse(originalFileName).ext) {
-                        saveFilePath = path.join(saveFilePath, originalFileName);
-                    }
-
-                    let saveFolderPath = path.dirname(saveFilePath);
-
                     if (/.json$/.test(saveFilePath)) {
                         response.body = JSON.stringify(response.body, null, 4);
                     }
@@ -87,6 +74,25 @@ export class Download {
                     }
                 });
         });
+    }
+
+    private getSaveFilePath = (saveTo: string, spRelativeFilePath: string): string => {
+        let saveFilePath = path.resolve(saveTo);
+        let originalFileName = decodeURIComponent(spRelativeFilePath).split('/').pop();
+
+        try {
+            if (fs.lstatSync(saveFilePath).isDirectory()) {
+                saveFilePath = path.join(saveFilePath, originalFileName);
+            }
+        } catch (e) {
+            //
+        }
+
+        if (path.parse(saveFilePath).ext !== path.parse(originalFileName).ext) {
+            saveFilePath = path.join(saveFilePath, originalFileName);
+        }
+
+        return saveFilePath;
     }
 
 }
