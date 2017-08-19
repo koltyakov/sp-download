@@ -14,39 +14,18 @@
 - SharePoint 2013
 - SharePoint 2016
 
-## Supported authentication scenarios
-
-- SharePoint On-Premise (2013, 2016):
-  - User credentials (NTLM)
-  - Form-based authentication (FBA)
-  - Add-In Only permissions
-  - ADFS user credentials
-
-- SharePoint Online:
-  - User credentials (SAML)
-  - Add-In Only permissions
-  - ADFS user credentials
-
 ## Get started
 
-### Global CLI install
+### Command line (CLI)
+
+#### Prerequesites
+
+- Node.js
+
+#### Install
 
 ```bash
 npm install sp-download -g
-```
-
-### Library install for usage in Node.js projects
-
-#### NPM
-
-```bash
-npm install sp-download --save
-```
-
-#### Yarn
-
-```bash
-yarn add sp-download
 ```
 
 ### Command line (CLI) usage
@@ -66,7 +45,19 @@ sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext
 - `out` - local directory or path to file where downloaded file should be saved
 - `conf` - path to credentials config file
 
-### Usage in Node.js application
+### In Node.js applications
+
+#### Install
+
+```bash
+npm install sp-download --save
+```
+
+or
+
+```bash
+yarn add sp-download
+```
 
 #### Minimal setup (TypeScript)
 
@@ -119,3 +110,20 @@ download.downloadFileAbs(filePathToDownload, saveToPath)
         console.log(error);
     });
 ```
+
+## Authentication settings
+
+The library provides wizard-like approach for building and managing config files for [`node-sp-auth`](https://github.com/s-KaiNet/node-sp-auth) (Node.js to SharePoint unattended http authentication).
+
+- SharePoint On-Premise (2013, 2016):
+  - User credentials (NTLM)
+  - Form-based authentication (FBA)
+  - Add-In Only permissions
+  - ADFS user credentials
+
+- SharePoint Online:
+  - User credentials (SAML)
+  - Add-In Only permissions
+  - ADFS user credentials
+
+For more information please check node-sp-auth [credential options](https://github.com/s-KaiNet/node-sp-auth#params) and [wiki pages](https://github.com/s-KaiNet/node-sp-auth/wiki).
