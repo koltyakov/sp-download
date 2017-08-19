@@ -64,16 +64,10 @@ yarn add sp-download
 #### Minimal setup (TypeScript)
 
 ```javascript
-import { Download } from 'sp-download';
+import { Download, IAuthOptions } from 'sp-download';
 
-const authContext: any = {
-    // ... node-sp-auth options:
-    //  - IOnPremiseAddinCredentials,
-    //  - IOnpremiseUserCredentials,
-    //  - IOnpremiseFbaCredentials,
-    //  - IOnlineAddinCredentials,
-    //  - IUserCredentials,
-    //  - IAdfsUserCredentials
+const authContext: IAuthOptions = {
+    // ... node-sp-auth options
 };
 
 const download = new Download(authContext);
