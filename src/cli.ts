@@ -15,13 +15,15 @@ const argv: IDownloadArgv = minimist(process.argv.slice(2));
 
     // Required parameters check
     if (typeof argv.url === 'undefined') {
-        return console.log(chalk.red(`'--url' parameter should be provided`), `(full path to the file in SharePoint to download)`);
+        console.log(chalk.red(`'--url' parameter should be provided`), `(full path to the file in SharePoint to download)`);
+        return;
     }
     if (typeof argv.out === 'undefined') {
-        return console.log(chalk.red(`'--out' parameter should be provided`), `(folder of file path to save the file to)`);
+        console.log(chalk.red(`'--out' parameter should be provided`), `(folder of file path to save the file to)`);
+        return;
     }
     if (typeof argv.conf === 'undefined') {
-        return console.log(chalk.gray(`'--conf' parameter is not provided`), `(the default configuration path is used)`);
+        console.log(chalk.gray(`'--conf' parameter is not provided`), `(the default configuration path is used)`);
     }
 
     const authConfig = new AuthConfig({
