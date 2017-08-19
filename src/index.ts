@@ -1,3 +1,3 @@
-export { IOnPremiseAddinCredentials, IOnpremiseUserCredentials, IOnpremiseFbaCredentials,
-         IOnlineAddinCredentials, IUserCredentials, IAdfsUserCredentials } from 'node-sp-auth';
+import { IAuthContext } from 'node-sp-auth-config';
+export { IAuthOptions } from 'node-sp-auth';
 export { Download } from './api/Download';
