@@ -1,0 +1,58 @@
+{
+  "name": "sp-download",
+  "description": "SharePoint JavaScript Object Model for Node.js",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "typings": "./dist/index",
+  "scripts": {
+    "build": "gulp tsc",
+    "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
+    "update-assets": "ts-node ./scripts/downloadAssets.ts",
+    "upgrade": "ncu --upgrade --upgradeAll && yarn upgrade"
+  },
+  "bin": {
+    "sp-download": "./dist/cli.js"
+  },
+  "keywords": [
+    "sharepoint",
+    "download",
+    "client",
+    "nodejs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koltyakov/sp-download.git"
+  },
+  "author": "Andrew Koltyakov <andrew.koltyakov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/koltyakov/sp-download/issues"
+  },
+  "homepage": "https://github.com/koltyakov/sp-download#readme",
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "cpass": "^2.0.1",
+    "minimist": "^1.2.0",
+    "node-sp-auth-config": "^2.0.2",
+    "sp-request": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.2",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.20",
+    "chai": "^4.1.1",
+    "colors": "^1.1.2",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.1",
+    "merge-stream": "^1.0.1",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.5.0",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.6.0",
+    "typescript": "^2.4.2",
+    "yargs": "^8.0.2"
+  }
+}
