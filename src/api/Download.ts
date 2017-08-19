@@ -1,18 +1,16 @@
 import { create as createRequest, ISPRequest } from 'sp-request';
-import { IAuthContext } from 'node-sp-auth-config';
-import * as chalk from 'chalk';
+import { IOnPremiseAddinCredentials, IOnpremiseUserCredentials, IOnpremiseFbaCredentials,
+         IOnlineAddinCredentials, IUserCredentials, IAdfsUserCredentials } from 'node-sp-auth';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 
 export class Download {
 
-    private context: IAuthContext;
     private spr: ISPRequest;
 
-    constructor(context: IAuthContext) {
-        this.context = context;
-        this.spr = createRequest(<any>context);
+    constructor(context: IOnPremiseAddinCredentials | IOnpremiseUserCredentials | IOnpremiseFbaCredentials | IOnlineAddinCredentials | IUserCredentials | IAdfsUserCredentials) {
+        this.spr = createRequest(context);
     }
 
     public downloadFile = (spFileAbsolutePath: string, saveTo: string) => {
@@ -67,7 +65,6 @@ export class Download {
                     });
                 })
                 .catch(err => {
-                    console.log(chalk.red('\nError in operations.downloadFileRaw:', err.message));
                     reject(err.message);
                 });
         });
@@ -85,7 +82,7 @@ export class Download {
                     childUrlArr.pop();
                     let childUrl = childUrlArr.join('/');
                     if (childUrlArr.length <= 3) {
-                        reject('Wrong url, can\'t get Web property');
+                        reject(`Wrong url, can't get Web property`);
                     } else {
                         resolve(this.getWebByAnyChildUrl(childUrl));
                     }

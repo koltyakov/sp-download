@@ -55,12 +55,12 @@ yarn add sp-download
 ### Command line (CLI) usage
 
 ```bash
-sp-download --url='https://contoso.sharepoint.com/sites/site/lib/folder/file.ext' --out='./download'
+sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext" --out="./download"
 ```
 or
 
 ```bash
-sp-download --url='https://contoso.sharepoint.com/sites/site/lib/folder/file.ext' --out='./download/filename.ext'
+sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext" --out="./download/filename.ext"
 ```
 
 #### Arguments
@@ -74,10 +74,16 @@ sp-download --url='https://contoso.sharepoint.com/sites/site/lib/folder/file.ext
 #### Minimal setup (TypeScript)
 
 ```javascript
-import { Download, IAuthContext } from 'sp-download';
+import { Download } from 'sp-download';
 
-const authContext: IAuthContext = {
-    // ... node-sp-auth options
+const authContext: any = {
+    // ... node-sp-auth options:
+    //  - IOnPremiseAddinCredentials,
+    //  - IOnpremiseUserCredentials,
+    //  - IOnpremiseFbaCredentials,
+    //  - IOnlineAddinCredentials,
+    //  - IUserCredentials,
+    //  - IAdfsUserCredentials
 };
 
 const download = new Download(authContext);

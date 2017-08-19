@@ -4,3 +4,4 @@ config/**/private.*.json
 debug.log
 npm-debug.*
 dist
+download
