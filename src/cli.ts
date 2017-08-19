@@ -45,4 +45,4 @@ const argv: IDownloadArgv = minimist(process.argv.slice(2));
             console.log(error);
         });
 
-});
+})();
