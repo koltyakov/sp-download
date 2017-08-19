@@ -1,13 +1,12 @@
 {
   "name": "sp-download",
   "description": "SharePoint JavaScript Object Model for Node.js",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "./dist/index.js",
   "typings": "./dist/index",
   "scripts": {
     "build": "gulp tsc",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
-    "update-assets": "ts-node ./scripts/downloadAssets.ts",
     "upgrade": "ncu --upgrade --upgradeAll && yarn upgrade"
   },
   "bin": {
@@ -17,7 +16,8 @@
     "sharepoint",
     "download",
     "client",
-    "nodejs"
+    "nodejs",
+    "CLI"
   ],
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.0.2",
+    "@types/chalk": "^0.4.31",
     "@types/mocha": "^2.2.41",
     "@types/node": "^8.0.20",
     "chai": "^4.1.1",

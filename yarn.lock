@@ -27,6 +27,10 @@
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.0.3.tgz#6c2264b195cd2bb4c95c108487e13df0c8567c3e"
 
+"@types/chalk@^0.4.31":
+  version "0.4.31"
+  resolved "https://registry.yarnpkg.com/@types/chalk/-/chalk-0.4.31.tgz#a31d74241a6b1edbb973cf36d97a2896834a51f9"
+
 "@types/cookie@^0.1.29":
   version "0.1.29"
   resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.1.29.tgz#9324680545c0c7b1dc6c258cb46f32b78475b3ac"

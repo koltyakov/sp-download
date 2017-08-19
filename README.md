@@ -32,13 +32,21 @@
 
 ## Get started
 
-### NPM
+### Global CLI install
+
+```bash
+npm install sp-download -g
+```
+
+### Library install for usage in Node.js projects
+
+#### NPM
 
 ```bash
 npm install sp-download --save
 ```
 
-### Yarn
+#### Yarn
 
 ```bash
 yarn add sp-download
