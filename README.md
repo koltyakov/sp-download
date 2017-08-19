@@ -81,7 +81,7 @@ const download = new Download(authContext);
 let filePathToDownload: string = 'https://contoso.sharepoint.com/sites/site/lib/folder/file.ext';
 let saveToPath: string = './download';
 
-download.downloadFileAbs(filePathToDownload, saveToPath)
+download.downloadFile(filePathToDownload, saveToPath)
     .then(savedToPath => {
         console.log(`${argv.url} has been downloaded to ${savedToPath}`);
     })
@@ -104,7 +104,7 @@ const download = new Download(authContext);
 let filePathToDownload = 'https://contoso.sharepoint.com/sites/site/lib/folder/file.ext';
 let saveToPath = './download';
 
-download.downloadFileAbs(filePathToDownload, saveToPath)
+download.downloadFile(filePathToDownload, saveToPath)
     .then(savedToPath => {
         console.log(`${argv.url} has been downloaded to ${savedToPath}`);
     })
