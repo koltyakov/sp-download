@@ -1,12 +1,13 @@
 {
   "name": "sp-download",
   "description": "SharePoint JavaScript Object Model for Node.js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "./dist/index.js",
   "typings": "./dist/index",
   "scripts": {
     "build": "gulp tsc",
     "test": "ts-node ./test/init && mocha --opts test/mocha.opts || ECHO.",
+    "cli": "npm run build && node ./dist/cli.js",
     "upgrade": "ncu --upgrade --upgradeAll && yarn upgrade"
   },
   "bin": {

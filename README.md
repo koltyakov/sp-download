@@ -41,9 +41,11 @@ sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext
 
 #### Arguments
 
-- `url` - full path to the file in SharePoint
-- `out` - local directory or path to file where downloaded file should be saved
-- `conf` - path to credentials config file
+- `url` - full path to the file in SharePoint, required
+- `out` - local directory or path to file where downloaded file should be saved, optional, default is `./`
+- `conf` - path to credentials config file, optional, default is `./config/private.json`
+- `site` - SharePoint SPWeb url, optional, default is requested based on `url`
+- `ondemand` - on-demand auth request, optional, when value is `true` then enabled
 
 ### In Node.js applications
 

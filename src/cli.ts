@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as minimist from 'minimist';
-import { AuthConfig } from 'node-sp-auth-config';
+import { AuthConfig, IAuthConfigSettings } from 'node-sp-auth-config';
 import * as path from 'path';
 import * as colors from 'colors';
 
@@ -10,39 +10,62 @@ import { IDownloadArgv } from './interface/ICli';
 
 const argv: IDownloadArgv = minimist(process.argv.slice(2));
 
+const download = (context: any, params: IDownloadArgv) => {
+    const { downloadFile, downloadFileFromSite } = new Download(context.authOptions);
+    if (typeof params.site === 'undefined') {
+        return downloadFile(params.url, params.out)
+            .then(savedToPath => {
+                console.log(`${params.url} has been downloaded to ${savedToPath}`);
+            });
+    } else {
+        return downloadFileFromSite(params.site, params.url, params.out)
+            .then(savedToPath => {
+                console.log(`${params.url} has been downloaded to ${savedToPath}`);
+            });
+    }
+};
+
 // tslint:disable-next-line:no-unused-expression
 (() => {
 
     // Required parameters check
     if (typeof argv.url === 'undefined') {
-        console.log(colors.red(`'--url' parameter should be provided`), `(full path to the file in SharePoint to download)`);
+        console.log(
+            colors.red(`'${colors.bold('--url')}' parameter should be provided`),
+            colors.gray(`(full path to the file in SharePoint to download)`)
+        );
         return;
     }
     if (typeof argv.out === 'undefined') {
-        console.log(colors.red(`'--out' parameter should be provided`), `(folder of file path to save the file to)`);
-        return;
+        console.log(
+            colors.yellow(`'${colors.bold('--out')}' parameter is not provided`),
+            colors.gray(`(folder of file path to save the file to)`)
+        );
     }
-    if (typeof argv.conf === 'undefined') {
-        console.log(colors.gray(`'--conf' parameter is not provided`), `(the default configuration path is used)`);
+    if (typeof argv.conf === 'undefined' && (argv.ondemand || '').toLowerCase() !== 'true') {
+        console.log(
+            colors.yellow(`'${colors.bold('--conf')}' parameter is not provided`),
+            colors.gray(`(the default configuration path is used)`)
+        );
     }
 
-    const authConfig = new AuthConfig({
+    let authConfSettings: IAuthConfigSettings = {
         configPath: path.resolve(argv.conf || './config/private.json'),
         defaultConfigPath: path.join(__dirname, './config/default.json'),
         encryptPassword: true,
         saveConfigOnDisk: true
-    });
+    };
 
-    authConfig.getContext()
-        .then(context => {
-            const { downloadFile } = new Download(context.authOptions);
-            return downloadFile(argv.url, argv.out)
-                .then(savedToPath => {
-                    console.log(`${argv.url} has been downloaded to ${savedToPath}`);
-                });
-        })
-        .catch(error => {
-            console.log(colors.red(error));
+    const authConfig = new AuthConfig(authConfSettings);
+
+    if ((argv.ondemand || '').toLowerCase() !== 'true') {
+        download({ ondemand: true }, argv);
+    } else {
+        authConfig.getContext().then(context => {
+            download(context, argv);
+        }).catch(error => {
+            console.log(colors.red(`${colors.bold('Error:')} ${error}`));
         });
+    }
 
 })();

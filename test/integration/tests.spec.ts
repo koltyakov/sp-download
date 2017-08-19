@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as path from 'path';
 import * as sprequest from 'sp-request';
 import { Cpass } from 'cpass';
+import { IAuthOptions } from 'node-sp-auth';
 
 import { Download } from '../../src';
 import { Environments as TestsConfigs } from '../configs';
@@ -20,14 +21,14 @@ for (let testConfig of TestsConfigs) {
     describe(`Run tests in ${testConfig.environmentName}`, () => {
 
         let download: Download;
-        let context: any;
+        let context: IAuthOptions;
 
         before('Upload files for tests && prepare the Download', function(done: any): void {
             this.timeout(30 * 1000);
             context = require(path.resolve(testConfig.configPath));
-            context.password = context.password && cpass.decode(context.password);
+            (<any>context).password = (<any>context).password && cpass.decode((<any>context).password);
             download = new Download(context);
-            uploadFolder(context.siteUrl, context, path.resolve(testVariables.uploadFilesFolder), testVariables.rootFolderPath)
+            uploadFolder((<any>context).siteUrl, context, path.resolve(testVariables.uploadFilesFolder), testVariables.rootFolderPath)
                 .then(() => {
                     done();
                 })

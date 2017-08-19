@@ -1,6 +1,5 @@
 import { create as createRequest, ISPRequest } from 'sp-request';
-import { IOnPremiseAddinCredentials, IOnpremiseUserCredentials, IOnpremiseFbaCredentials,
-         IOnlineAddinCredentials, IUserCredentials, IAdfsUserCredentials } from 'node-sp-auth';
+import { IAuthOptions } from 'node-sp-auth';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
@@ -9,11 +8,11 @@ export class Download {
 
     private spr: ISPRequest;
 
-    constructor(context: IOnPremiseAddinCredentials | IOnpremiseUserCredentials | IOnpremiseFbaCredentials | IOnlineAddinCredentials | IUserCredentials | IAdfsUserCredentials) {
+    constructor(context: IAuthOptions) {
         this.spr = createRequest(context);
     }
 
-    public downloadFile = (spFileAbsolutePath: string, saveTo: string) => {
+    public downloadFile = (spFileAbsolutePath: string, saveTo: string = './') => {
         let childUrlArr = spFileAbsolutePath.split('/');
         childUrlArr.pop();
         let childUrl = childUrlArr.join('/');
@@ -21,11 +20,11 @@ export class Download {
             .then((web: any) => {
                 let baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
                 let spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
-                return this.downloadFileRaw(web.Url, spRelativeFilePath, saveTo);
+                return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
             });
     }
 
-    private downloadFileRaw = (siteUrl: string, spRelativeFilePath: string, saveTo: string) => {
+    public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
         return new Promise((resolve, reject) => {
             let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
                           `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
