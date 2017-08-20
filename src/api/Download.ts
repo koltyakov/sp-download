@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as https from 'https';
+import * as colors from 'colors';
 
 import * as request from 'request';
 import { OptionsWithUrl } from 'request';
@@ -28,7 +29,8 @@ export class Download {
         });
     }
 
-    public downloadFile = (spFileAbsolutePath: string, saveTo: string = './') => {
+    public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {
+        console.log(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
         let childUrlArr = spFileAbsolutePath.split('/');
         childUrlArr.pop();
         let childUrl = childUrlArr.join('/');
@@ -41,7 +43,8 @@ export class Download {
             });
     }
 
-    public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
+    public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<any> => {
+        console.log(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
         return this.downloadFileAsStream(siteUrl, spRelativeFilePath, saveTo);
         // // Download using sp-request, without streaming, consumes lots of memory in case of large files
         // return new Promise((resolve, reject) => {
@@ -77,7 +80,7 @@ export class Download {
 
     private downloadFileAsStream = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
         return new Promise((resolve, reject) => {
-            let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
+            let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/$value` +
                           `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
 
             let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
@@ -124,13 +127,17 @@ export class Download {
                     resolve(response.body.d);
                 })
                 .catch(err => {
-                    let childUrlArr = anyChildUrl.split('/');
-                    childUrlArr.pop();
-                    let childUrl = childUrlArr.join('/');
-                    if (childUrlArr.length <= 3) {
-                        reject(`Wrong url, can't get Web property`);
+                    if (err.statusCode === 404) {
+                        let childUrlArr = anyChildUrl.split('/');
+                        childUrlArr.pop();
+                        let childUrl = childUrlArr.join('/');
+                        if (childUrlArr.length <= 3) {
+                            return reject(`Wrong url, can't get Web property`);
+                        } else {
+                            return resolve(this.getWebByAnyChildUrl(childUrl));
+                        }
                     } else {
-                        resolve(this.getWebByAnyChildUrl(childUrl));
+                        return reject(err.message);
                     }
                 });
         });

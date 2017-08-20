@@ -51,7 +51,10 @@ const download = (context: any, params: IDownloadArgv) => {
 
     if ((argv.ondemand || '').toLowerCase() === 'true') {
 
-        download({ ondemand: true }, argv);
+        download({ ondemand: true }, argv)
+            .catch(error => {
+                console.log(colors.red(`${colors.bold('Error:')} ${error}`));
+            });
 
     } else {
 
@@ -64,11 +67,17 @@ const download = (context: any, params: IDownloadArgv) => {
 
         const authConfig = new AuthConfig(authConfSettings);
 
-        authConfig.getContext().then(context => {
-            download(context, argv);
-        }).catch(error => {
-            console.log(colors.red(`${colors.bold('Error:')} ${error}`));
-        });
+        authConfig.getContext()
+            .then(context => {
+                console.log(colors.gray(`Config file: ${colors.green(authConfSettings.configPath)}`));
+                if (context.siteUrl) {
+                    console.log(colors.gray(`SP site URL: ${colors.green(context.siteUrl)}`));
+                }
+                return download(context, argv);
+            })
+            .catch(error => {
+                console.log(colors.red(`${colors.bold('Error:')} ${error}`));
+            });
     }
 
 })();
