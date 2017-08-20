@@ -1,5 +1,6 @@
 import { create as createRequest, ISPRequest } from 'sp-request';
 import { getAuth, IAuthOptions } from 'node-sp-auth';
+import { AuthConfig } from 'node-sp-auth-config';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
@@ -20,13 +21,7 @@ export class Download {
     private agent: https.Agent;
 
     constructor(context: IAuthOptions) {
-        this.spr = createRequest(context);
-        this.context = context;
-        this.agent = new https.Agent({
-            rejectUnauthorized: false,
-            keepAlive: true,
-            keepAliveMsecs: 10000
-        });
+        this.initContext(context);
     }
 
     public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {
@@ -136,11 +131,41 @@ export class Download {
                         } else {
                             return resolve(this.getWebByAnyChildUrl(childUrl));
                         }
+                    } else if (err.statusCode === 401) {
+                        console.log(colors.red('401, Access Denied'));
+                        this.promptForCreds()
+                            .then(() => {
+                                return resolve(this.getWebByAnyChildUrl(anyChildUrl));
+                            })
+                            .catch(reject);
                     } else {
                         return reject(err.message);
                     }
                 });
         });
+    }
+
+    private initContext = (context: IAuthOptions) => {
+        this.spr = createRequest(context);
+        this.context = context;
+        this.agent = new https.Agent({
+            rejectUnauthorized: false,
+            keepAlive: true,
+            keepAliveMsecs: 10000
+        });
+    }
+
+    private promptForCreds = (): Promise<any> => {
+        return (new AuthConfig({
+            authOptions: this.context,
+            forcePrompts: true
+        }))
+            .getContext()
+            .then(context => {
+                this.initContext(context.authOptions);
+                console.log(colors.gray('Trying to download with new creds...'));
+                return context;
+            });
     }
 
     private getSaveFilePath = (saveTo: string, spRelativeFilePath: string): string => {
