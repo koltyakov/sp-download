@@ -14,6 +14,14 @@
 - SharePoint 2013
 - SharePoint 2016
 
+## Features
+
+- CLI && A library scenarious
+- Support robust authentication scenarious
+- Streaming download
+  - download files of any sizes
+  - no memory consumption growth
+
 ## Get started
 
 ### Command line (CLI)
