@@ -1,7 +1,7 @@
 {
   "name": "sp-download",
   "description": "Easy to use files download client library and CLI for SharePoint in Node.js",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "main": "./dist/index.js",
   "typings": "./dist/index",
   "scripts": {
@@ -33,7 +33,7 @@
   "dependencies": {
     "colors": "^1.1.2",
     "minimist": "^1.2.0",
-    "node-sp-auth-config": "^2.0.2",
+    "node-sp-auth-config": "^2.0.5",
     "request": "^2.81.0",
     "sp-request": "^2.1.0"
   },

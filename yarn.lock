@@ -98,16 +98,16 @@
     "@types/bluebird" "*"
     "@types/request" "*"
 
-"@types/request@*", "@types/request@0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.31.tgz#e9e77661f76c596a6fd0edba622005667171baeb"
+"@types/request@*", "@types/request@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.1.tgz#5fb3b273a19a67a698abfd38ece5cd8ef946bc6d"
   dependencies:
     "@types/form-data" "*"
     "@types/node" "*"
 
-"@types/request@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.1.tgz#5fb3b273a19a67a698abfd38ece5cd8ef946bc6d"
+"@types/request@0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-0.0.31.tgz#e9e77661f76c596a6fd0edba622005667171baeb"
   dependencies:
     "@types/form-data" "*"
     "@types/node" "*"
@@ -1927,6 +1927,16 @@ node-notifier@^4.5.0:
 node-sp-auth-config@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-2.0.3.tgz#ad67327615937e11bfbfe52fe7a6170dc58aa0d0"
+  dependencies:
+    colors "^1.1.2"
+    cpass "^2.0.0"
+    inquirer "^3.2.1"
+    mkdirp "^0.5.1"
+    node-sp-auth "^2.1.1"
+
+node-sp-auth-config@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/node-sp-auth-config/-/node-sp-auth-config-2.0.5.tgz#6166826effedcac5586b99ffa78841e695c523c4"
   dependencies:
     colors "^1.1.2"
     cpass "^2.0.0"
