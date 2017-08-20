@@ -49,18 +49,21 @@ const download = (context: any, params: IDownloadArgv) => {
         );
     }
 
-    let authConfSettings: IAuthConfigSettings = {
-        configPath: path.resolve(argv.conf || './config/private.json'),
-        defaultConfigPath: path.join(__dirname, './config/default.json'),
-        encryptPassword: true,
-        saveConfigOnDisk: true
-    };
+    if ((argv.ondemand || '').toLowerCase() === 'true') {
 
-    const authConfig = new AuthConfig(authConfSettings);
-
-    if ((argv.ondemand || '').toLowerCase() !== 'true') {
         download({ ondemand: true }, argv);
+
     } else {
+
+        let authConfSettings: IAuthConfigSettings = {
+            configPath: path.resolve(argv.conf || './config/private.json'),
+            defaultConfigPath: path.join(__dirname, './config/default.json'),
+            encryptPassword: true,
+            saveConfigOnDisk: true
+        };
+
+        const authConfig = new AuthConfig(authConfSettings);
+
         authConfig.getContext().then(context => {
             download(context, argv);
         }).catch(error => {
