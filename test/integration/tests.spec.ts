@@ -38,7 +38,7 @@ for (let testConfig of TestsConfigs) {
         it(`should download a file with output as a folder path`, function(done: MochaDone): void {
             this.timeout(30 * 1000);
             download.downloadFile(
-                `${context.siteUrl}/${testVariables.rootFolderPath}/Folder1/text.txt`,
+                `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/text.txt`,
                 testVariables.downloadPath
             ).then(() => {
                 done();
@@ -48,7 +48,7 @@ for (let testConfig of TestsConfigs) {
         it(`should download a file with output as a file path`, function(done: MochaDone): void {
             this.timeout(30 * 1000);
             download.downloadFile(
-                `${context.siteUrl}/${testVariables.rootFolderPath}/Folder1/Folder2/logo.png`,
+                `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/Folder2/logo.png`,
                 `${testVariables.downloadPath}/logo1.png`
             ).then(() => {
                 done();

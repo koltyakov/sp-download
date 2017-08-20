@@ -105,6 +105,13 @@
     "@types/form-data" "*"
     "@types/node" "*"
 
+"@types/request@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.1.tgz#5fb3b273a19a67a698abfd38ece5cd8ef946bc6d"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
+
 "@types/vinyl-fs@0.0.28":
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/vinyl-fs/-/vinyl-fs-0.0.28.tgz#4663017bc802c6570eae4f3409fd5cabf97cbfde"

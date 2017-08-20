@@ -1,15 +1,31 @@
 import { create as createRequest, ISPRequest } from 'sp-request';
-import { IAuthOptions } from 'node-sp-auth';
+import { getAuth, IAuthOptions } from 'node-sp-auth';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
+import * as https from 'https';
+
+import * as request from 'request';
+import { OptionsWithUrl } from 'request';
+
+const isUrlHttps: any = (url: string): boolean => {
+    return url.split('://')[0].toLowerCase() === 'https';
+};
 
 export class Download {
 
     private spr: ISPRequest;
+    private context: IAuthOptions;
+    private agent: https.Agent;
 
     constructor(context: IAuthOptions) {
         this.spr = createRequest(context);
+        this.context = context;
+        this.agent = new https.Agent({
+            rejectUnauthorized: false,
+            keepAlive: true,
+            keepAliveMsecs: 10000
+        });
     }
 
     public downloadFile = (spFileAbsolutePath: string, saveTo: string = './') => {
@@ -20,11 +36,46 @@ export class Download {
             .then((web: any) => {
                 let baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
                 let spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
-                return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
+                // return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
+                return this.downloadFileAsStream(web.Url, spRelativeFilePath, saveTo);
             });
     }
 
     public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
+        return this.downloadFileAsStream(siteUrl, spRelativeFilePath, saveTo);
+        // // Download using sp-request, without streaming, consumes lots of memory in case of large files
+        // return new Promise((resolve, reject) => {
+        //     let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
+        //                   `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
+
+        //     let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+        //     let saveFolderPath = path.dirname(saveFilePath);
+
+        //     this.spr.get(restUrl, { encoding: null })
+        //         .then(response => {
+        //             if (/.json$/.test(saveFilePath)) {
+        //                 response.body = JSON.stringify(response.body, null, 4);
+        //             }
+        //             if (/.map$/.test(saveFilePath)) {
+        //                 response.body = JSON.stringify(response.body);
+        //             }
+        //             mkdirp(saveFolderPath, err => {
+        //                 // tslint:disable-next-line:no-shadowed-variable
+        //                 fs.writeFile(saveFilePath, response.body, err => {
+        //                     if (err) {
+        //                         throw err;
+        //                     }
+        //                     resolve(saveFilePath);
+        //                 });
+        //             });
+        //         })
+        //         .catch(err => {
+        //             reject(err.message);
+        //         });
+        // });
+    }
+
+    private downloadFileAsStream = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
         return new Promise((resolve, reject) => {
             let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
                           `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
@@ -32,27 +83,36 @@ export class Download {
             let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
             let saveFolderPath = path.dirname(saveFilePath);
 
-            this.spr.get(restUrl, { encoding: null })
-                .then(response => {
-                    if (/.json$/.test(saveFilePath)) {
-                        response.body = JSON.stringify(response.body, null, 4);
-                    }
-                    if (/.map$/.test(saveFilePath)) {
-                        response.body = JSON.stringify(response.body);
-                    }
-                    mkdirp(saveFolderPath, err => {
-                        // tslint:disable-next-line:no-shadowed-variable
-                        fs.writeFile(saveFilePath, response.body, err => {
-                            if (err) {
-                                throw err;
-                            }
+            mkdirp(saveFolderPath, err => {
+                if (err) {
+                    return reject(err);
+                }
+                getAuth(siteUrl, this.context).then(auth => {
+
+                    let options: OptionsWithUrl = {
+                        url: restUrl,
+                        method: 'GET',
+                        headers: {
+                            ...auth.headers,
+                            'User-Agent': 'sp-download'
+                        },
+                        encoding: null,
+                        strictSSL: false,
+                        gzip: true,
+                        agent: isUrlHttps(siteUrl) ? this.agent : undefined,
+                        ...auth.options
+                    };
+
+                    request(options)
+                        .pipe(fs.createWriteStream(saveFilePath))
+                        .on('error', reject)
+                        .on('finish', () => {
                             resolve(saveFilePath);
                         });
-                    });
-                })
-                .catch(err => {
-                    reject(err.message);
-                });
+
+                }).catch(reject);
+            });
+
         });
     }
 
