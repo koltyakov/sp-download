@@ -47,13 +47,22 @@ or
 sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext" --out="./download/filename.ext"
 ```
 
-#### Arguments
+#### Options
 
-- `url` - full path to the file in SharePoint, required
-- `out` - local directory or path to file where downloaded file should be saved, optional, default is `./`
-- `conf` - path to credentials config file, optional, default is `./config/private.json`
-- `site` - SharePoint SPWeb url, optional, default is requested based on `url`
-- `ondemand` - on-demand auth request, optional, when value is `true` then enabled
+Print help:
+
+```bash
+sp-download -h
+```
+
+| Shortcut | Option | Description |
+| --- | --- | --- |
+| -V | --version | output the version number  |
+| -u | --url [value] | full path to the file in SharePoint, required |
+| -o | --out [value] | local directory or path to file where downloaded file should be saved, optional, default is `./` |
+| -s | --site [value] | SharePoint SPWeb url, optional, default is requested based on `url` |
+| -d | --ondemand | On-Demand auth request, optional |
+| -h | --help | output usage information |
 
 ### In Node.js applications
 

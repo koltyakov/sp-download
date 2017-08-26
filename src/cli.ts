@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import * as minimist from 'minimist';
+// import * as minimist from 'minimist';
+import * as program from 'commander';
 import { AuthConfig, IAuthConfigSettings } from 'node-sp-auth-config';
 import * as path from 'path';
 import * as colors from 'colors';
@@ -8,7 +9,16 @@ import * as colors from 'colors';
 import { Download } from './api/Download';
 import { IDownloadArgv } from './interface/ICli';
 
-const argv: IDownloadArgv = minimist(process.argv.slice(2));
+program
+    .version('0.3.4')
+    .usage('--url=<file ...> [options]')
+    .option('-u, --url [value]', 'full path to the file in SharePoint, required')
+    .option('-o, --out [value]', 'local directory or path to file where downloaded file should be saved, optional, default is `./`')
+    .option('-s, --site [value]', 'SharePoint SPWeb url, optional, default is requested based on `url`')
+    .option('-d, --ondemand', 'On-Demand auth request, optional')
+    .parse(process.argv);
+
+const argv: IDownloadArgv = <any>program;
 
 const download = (context: any, params: IDownloadArgv) => {
     const { downloadFile, downloadFileFromSite } = new Download(context.authOptions);
