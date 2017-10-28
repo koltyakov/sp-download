@@ -13,7 +13,6 @@ gulp.task('clean', () => {
 
 // Prepare package before publishing to NPM
 gulp.task('prepublish', ['clean'], () => {
-  F
   let tsSourcesResult = gulp
     .src(['./src/**/*.ts'])
     .pipe(tsc.createProject('tsconfig.json')());

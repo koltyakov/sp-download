@@ -8,7 +8,7 @@
 
 `sp-download` is a SharePoint files download library and CLI in Node.js.
 
-## Supported SharePoint versions:
+## Supported SharePoint versions
 
 - SharePoint Online
 - SharePoint 2013

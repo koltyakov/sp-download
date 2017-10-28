@@ -17,7 +17,7 @@ export const walkSync = (dir: string, filelist: string[] = []): string[] => {
 
 export const uploadFolder = (siteUrl: string, authOptions: any, fromFolder: string, toFolder: string): Promise<any> => {
 
-  async function upload() {
+  async function upload () {
     const coreOptions: ICoreOptions = {
       siteUrl: siteUrl,
       notification: false,
