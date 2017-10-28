@@ -30,7 +30,7 @@
 
 - Node.js
 
-#### Install
+#### Install as CLI
 
 ```bash
 npm install sp-download -g
@@ -41,6 +41,7 @@ npm install sp-download -g
 ```bash
 sp-download --url="https://contoso.sharepoint.com/sites/site/lib/folder/file.ext" --out="./download"
 ```
+
 or
 
 ```bash
@@ -66,7 +67,7 @@ sp-download -h
 
 ### In Node.js applications
 
-#### Install
+#### Install as dependency
 
 ```bash
 npm install sp-download --save
@@ -84,7 +85,7 @@ yarn add sp-download
 import { Download, IAuthOptions } from 'sp-download';
 
 const authContext: IAuthOptions = {
-    // ... node-sp-auth options
+  // ... node-sp-auth options
 };
 
 const download = new Download(authContext);
@@ -93,12 +94,12 @@ let filePathToDownload: string = 'https://contoso.sharepoint.com/sites/site/lib/
 let saveToPath: string = './download';
 
 download.downloadFile(filePathToDownload, saveToPath)
-    .then(savedToPath => {
-        console.log(`${argv.url} has been downloaded to ${savedToPath}`);
-    })
-    .catch(error => {
-        console.log(error);
-    });
+  .then(savedToPath => {
+    console.log(`${argv.url} has been downloaded to ${savedToPath}`);
+  })
+  .catch(error => {
+    console.log(error);
+  });
 ```
 
 #### Minimal setup (JavaScript)
@@ -107,7 +108,7 @@ download.downloadFile(filePathToDownload, saveToPath)
 const Download = require('sp-download').Download;
 
 const authContext = {
-    // ... node-sp-auth options
+  // ... node-sp-auth options
 };
 
 const download = new Download(authContext);
@@ -116,12 +117,12 @@ let filePathToDownload = 'https://contoso.sharepoint.com/sites/site/lib/folder/f
 let saveToPath = './download';
 
 download.downloadFile(filePathToDownload, saveToPath)
-    .then(savedToPath => {
-        console.log(`${argv.url} has been downloaded to ${savedToPath}`);
-    })
-    .catch(error => {
-        console.log(error);
-    });
+  .then(savedToPath => {
+    console.log(`${argv.url} has been downloaded to ${savedToPath}`);
+  })
+  .catch(error => {
+    console.log(error);
+  });
 ```
 
 ## Authentication settings
