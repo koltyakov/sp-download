@@ -5,3 +5,5 @@ debug.log
 npm-debug.*
 dist
 download
+tmp
+temp

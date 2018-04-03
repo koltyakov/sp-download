@@ -76,8 +76,16 @@ export class Download {
 
   private downloadFileAsStream = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
     return new Promise((resolve, reject) => {
-      let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/$value` +
-        `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
+
+      let endpointUrl: string;
+
+      if (spRelativeFilePath.indexOf('/_vti_history/') !== -1) {
+        const hostUrl = siteUrl.replace('://', '___').split('/')[0].replace('___', '://');
+        endpointUrl = `${hostUrl}${encodeURIComponent(spRelativeFilePath).replace(/%2F/g, '/')}`;
+      } else {
+        endpointUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/$value` +
+          `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
+      }
 
       let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
       let saveFolderPath = path.dirname(saveFilePath);
@@ -89,7 +97,7 @@ export class Download {
         getAuth(siteUrl, this.context).then(auth => {
 
           let options: OptionsWithUrl = {
-            url: restUrl,
+            url: endpointUrl,
             method: 'GET',
             headers: {
               ...auth.headers,
