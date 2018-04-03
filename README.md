@@ -61,6 +61,7 @@ sp-download -h
 | -V | --version | output the version number  |
 | -u | --url [value] | full path to the file in SharePoint, required |
 | -o | --out [value] | local directory or path to file where downloaded file should be saved, optional, default is `./` |
+| -c | --conf [value] | Path to private configuration file |
 | -s | --site [value] | SharePoint SPWeb url, optional, default is requested based on `url` |
 | -d | --ondemand | On-Demand auth request, optional |
 | -h | --help | output usage information |
