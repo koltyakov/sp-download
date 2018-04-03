@@ -10,3 +10,5 @@ tsconfig.json
 tslint.json
 download
 .github
+tmp
+temp
