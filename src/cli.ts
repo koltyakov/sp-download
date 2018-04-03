@@ -15,6 +15,7 @@ program
   .option('-u, --url [value]', 'full path to the file in SharePoint, required')
   .option('-o, --out [value]', 'local directory or path to file where downloaded file should be saved, optional, default is `./`')
   .option('-s, --site [value]', 'SharePoint SPWeb url, optional, default is requested based on `url`')
+  .option('-c, --conf [value]', 'Path to private configuration file')
   .option('-d, --ondemand', 'On-Demand auth request, optional')
   .parse(process.argv);
 
