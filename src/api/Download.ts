@@ -31,7 +31,7 @@ export class Download {
     childUrlArr.pop();
     let childUrl = childUrlArr.join('/');
     return this.getWebByAnyChildUrl(childUrl)
-      .then((web: any) => {
+      .then(web => {
         let baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
         let spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
         // return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
@@ -123,19 +123,17 @@ export class Download {
     });
   }
 
-  private getWebByAnyChildUrl = (anyChildUrl: string) => {
+  private getWebByAnyChildUrl = (anyChildUrl: string): Promise<any> => {
     return new Promise((resolve, reject) => {
       let restUrl = `${anyChildUrl}/_api/web?$select=Url,ServerRelativeUrl`;
       this.spr.get(restUrl)
-        .then(response => {
-          resolve(response.body.d);
-        })
+        .then(response => resolve(response.body.d))
         .catch(err => {
           if (err.statusCode === 404) {
             let childUrlArr = anyChildUrl.split('/');
             childUrlArr.pop();
             let childUrl = childUrlArr.join('/');
-            if (childUrlArr.length <= 3) {
+            if (childUrlArr.length <= 2) {
               return reject(`Wrong url, can't get Web property`);
             } else {
               return resolve(this.getWebByAnyChildUrl(childUrl));
@@ -143,9 +141,7 @@ export class Download {
           } else if (err.statusCode === 401) {
             console.log(colors.red('401, Access Denied'));
             this.promptForCreds()
-              .then(() => {
-                return resolve(this.getWebByAnyChildUrl(anyChildUrl));
-              })
+              .then(() => resolve(this.getWebByAnyChildUrl(anyChildUrl)))
               .catch(reject);
           } else {
             return reject(err.message);
@@ -154,7 +150,7 @@ export class Download {
     });
   }
 
-  private initContext = (context: IAuthOptions) => {
+  private initContext = (context: IAuthOptions): void => {
     this.spr = createRequest(context);
     this.context = context;
     this.agent = new https.Agent({

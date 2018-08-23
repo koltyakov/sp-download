@@ -28,9 +28,7 @@ for (let testConfig of TestsConfigs) {
       (context as any).password = (context as any).password && cpass.decode((context as any).password);
       download = new Download(context);
       uploadFolder((context as any).siteUrl, context, path.resolve(testVariables.uploadFilesFolder), testVariables.rootFolderPath)
-        .then(() => {
-          done();
-        })
+        .then(() => done())
         .catch(done);
     });
 
@@ -39,9 +37,7 @@ for (let testConfig of TestsConfigs) {
       download.downloadFile(
         `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/text.txt`,
         testVariables.downloadPath
-      ).then(() => {
-        done();
-      }).catch(done);
+      ).then(() => done()).catch(done);
     });
 
     it(`should download a file with output as a file path`, function (done: MochaDone): void {
@@ -49,9 +45,15 @@ for (let testConfig of TestsConfigs) {
       download.downloadFile(
         `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/Folder2/logo.png`,
         `${testVariables.downloadPath}/logo1.png`
-      ).then(() => {
-        done();
-      }).catch(done);
+      ).then(() => done()).catch(done);
+    });
+
+    it(`should download a file with spaces in file name`, function (done: MochaDone): void {
+      this.timeout(30 * 1000);
+      download.downloadFile(
+        `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/file with spaces.txt`,
+        `${testVariables.downloadPath}/file with spaces.txt`
+      ).then(() => done()).catch(done);
     });
 
   });
