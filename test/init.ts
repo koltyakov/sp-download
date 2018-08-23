@@ -4,9 +4,7 @@ import * as path from 'path';
 
 import { Environments } from './configs';
 
-export async function checkOrPromptForIntegrationConfigCreds (): Promise<void> {
-
-  let configs = [];
+export async function checkOrPromptForIntegrationConfigCreds(): Promise<void> {
 
   for (let testConfig of Environments) {
     console.log(`\n=== ${colors.bold.yellow(`${testConfig.environmentName} Credentials`)} ===\n`);
