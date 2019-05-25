@@ -6,3 +6,5 @@ download/
 .github/
 tsconfig.json
 tslint.json
+.env
+azure-pipelines.yml

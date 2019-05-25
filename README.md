@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/sp-download.svg)](https://badge.fury.io/js/sp-download)
 [![Downloads](https://img.shields.io/npm/dm/sp-download.svg)](https://www.npmjs.com/package/sp-download)
+![Build Status](https://koltyakov.visualstudio.com/SPNode/_apis/build/status/sp-download?branchName=master)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/sharepoint-node/Lobby)
 
 `sp-download` is a SharePoint files download library and CLI in Node.js.

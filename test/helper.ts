@@ -38,9 +38,9 @@ export const uploadFolder = (siteUrl: string, authOptions: any, fromFolder: stri
         .then(() => {
           console.log = log;
         })
-        .catch(err => {
+        .catch((error) => {
           console.log = log;
-          throw new Error(err);
+          throw new Error(error);
         });
     }
     return 'Done';

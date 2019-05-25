@@ -4,3 +4,4 @@ debug.log
 npm-debug.*
 dist/
 download/
+.env
