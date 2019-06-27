@@ -6,10 +6,10 @@ import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as https from 'https';
 import * as colors from 'colors';
-
 import * as request from 'request';
-// tslint:disable-next-line:no-duplicate-imports
-import { OptionsWithUrl } from 'request';
+
+import { Logger, LogLevel } from '../utils/logger';
+import { IDownloadOptions } from '../interface/IDownload';
 
 const isUrlHttps: any = (url: string): boolean => {
   return url.split('://')[0].toLowerCase() === 'https';
@@ -20,35 +20,37 @@ export class Download {
   private spr: ISPRequest;
   private context: IAuthOptions;
   private agent: https.Agent;
+  private logger: Logger;
 
-  constructor (context: IAuthOptions) {
+  constructor (context: IAuthOptions, options: IDownloadOptions = {}) {
     this.initContext(context);
+    this.logger = new Logger(options.logLevel || LogLevel.Info);
   }
 
   public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {
-    console.log(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
-    let childUrlArr = spFileAbsolutePath.split('/');
+    this.logger.info(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
+    const childUrlArr = spFileAbsolutePath.split('/');
     childUrlArr.pop();
-    let childUrl = childUrlArr.join('/');
+    const childUrl = childUrlArr.join('/');
     return this.getWebByAnyChildUrl(childUrl)
-      .then(web => {
-        let baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
-        let spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
+      .then((web) => {
+        const baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
+        const spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
         // return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
         return this.downloadFileAsStream(web.Url, spRelativeFilePath, saveTo);
       });
   }
 
   public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<any> => {
-    console.log(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
+    this.logger.info(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
     return this.downloadFileAsStream(siteUrl, spRelativeFilePath, saveTo);
     // // Download using sp-request, without streaming, consumes lots of memory in case of large files
     // return new Promise((resolve, reject) => {
-    //     let restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
+    //     const restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
     //                   `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
 
-    //     let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
-    //     let saveFolderPath = path.dirname(saveFilePath);
+    //     const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+    //     const saveFolderPath = path.dirname(saveFilePath);
 
     //     this.spr.get(restUrl, { encoding: null })
     //         .then(response => {
@@ -87,18 +89,18 @@ export class Download {
           `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
       }
 
-      let saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
-      let saveFolderPath = path.dirname(saveFilePath);
+      const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+      const saveFolderPath = path.dirname(saveFilePath);
 
-      mkdirp(saveFolderPath, err => {
+      mkdirp(saveFolderPath, (err) => {
         if (err) {
           return reject(err);
         }
-        getAuth(siteUrl, this.context).then(auth => {
+        getAuth(siteUrl, this.context).then((auth) => {
 
-          let options: OptionsWithUrl = {
+          const options: request.OptionsWithUrl = {
             url: endpointUrl,
-            method: 'GET',
+            // method: 'GET',
             headers: {
               ...auth.headers,
               'User-Agent': 'sp-download'
@@ -110,12 +112,10 @@ export class Download {
             ...auth.options
           };
 
-          request(options)
+          request.get(options)
             .pipe(fs.createWriteStream(saveFilePath))
             .on('error', reject)
-            .on('finish', () => {
-              resolve(saveFilePath);
-            });
+            .on('finish', () => resolve(saveFilePath));
 
         }).catch(reject);
       });
@@ -125,21 +125,21 @@ export class Download {
 
   private getWebByAnyChildUrl = (anyChildUrl: string): Promise<any> => {
     return new Promise((resolve, reject) => {
-      let restUrl = `${anyChildUrl}/_api/web?$select=Url,ServerRelativeUrl`;
+      const restUrl = `${anyChildUrl}/_api/web?$select=Url,ServerRelativeUrl`;
       this.spr.get(restUrl)
-        .then(response => resolve(response.body.d))
-        .catch(err => {
+        .then((response) => resolve(response.body.d))
+        .catch((err) => {
           if (err.statusCode === 404) {
-            let childUrlArr = anyChildUrl.split('/');
+            const childUrlArr = anyChildUrl.split('/');
             childUrlArr.pop();
-            let childUrl = childUrlArr.join('/');
+            const childUrl = childUrlArr.join('/');
             if (childUrlArr.length <= 2) {
               return reject(`Wrong url, can't get Web property`);
             } else {
               return resolve(this.getWebByAnyChildUrl(childUrl));
             }
           } else if (err.statusCode === 401) {
-            console.log(colors.red('401, Access Denied'));
+            this.logger.error(colors.red('401, Access Denied'));
             this.promptForCreds()
               .then(() => resolve(this.getWebByAnyChildUrl(anyChildUrl)))
               .catch(reject);
@@ -161,21 +161,21 @@ export class Download {
   }
 
   private promptForCreds = (): Promise<any> => {
-    return (new AuthConfig({
+    return new AuthConfig({
       authOptions: this.context,
       forcePrompts: true
-    }))
+    })
       .getContext()
-      .then(context => {
+      .then((context) => {
         this.initContext(context.authOptions);
-        console.log(colors.gray('Trying to download with new creds...'));
+        this.logger.info(colors.gray('Trying to download with new creds...'));
         return context;
       });
   }
 
   private getSaveFilePath = (saveTo: string, spRelativeFilePath: string): string => {
     let saveFilePath = path.resolve(saveTo);
-    let originalFileName = decodeURIComponent(spRelativeFilePath).split('/').pop();
+    const originalFileName = decodeURIComponent(spRelativeFilePath).split('/').pop();
 
     try {
       if (fs.lstatSync(saveFilePath).isDirectory()) {
@@ -193,3 +193,5 @@ export class Download {
   }
 
 }
+
+export { IDownloadOptions } from '../interface/IDownload';
