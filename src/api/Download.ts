@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as https from 'https';
-import * as colors from 'colors';
 
 import * as request from 'request';
 // tslint:disable-next-line:no-duplicate-imports
@@ -26,7 +25,6 @@ export class Download {
   }
 
   public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {
-    console.log(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
     let childUrlArr = spFileAbsolutePath.split('/');
     childUrlArr.pop();
     let childUrl = childUrlArr.join('/');
@@ -40,7 +38,6 @@ export class Download {
   }
 
   public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<any> => {
-    console.log(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
     return this.downloadFileAsStream(siteUrl, spRelativeFilePath, saveTo);
     // // Download using sp-request, without streaming, consumes lots of memory in case of large files
     // return new Promise((resolve, reject) => {
@@ -139,7 +136,6 @@ export class Download {
               return resolve(this.getWebByAnyChildUrl(childUrl));
             }
           } else if (err.statusCode === 401) {
-            console.log(colors.red('401, Access Denied'));
             this.promptForCreds()
               .then(() => resolve(this.getWebByAnyChildUrl(anyChildUrl)))
               .catch(reject);
@@ -168,7 +164,6 @@ export class Download {
       .getContext()
       .then(context => {
         this.initContext(context.authOptions);
-        console.log(colors.gray('Trying to download with new creds...'));
         return context;
       });
   }
