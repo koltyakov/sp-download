@@ -2,7 +2,7 @@ import * as mocha from 'mocha';
 import * as path from 'path';
 import { IAuthContext } from 'node-sp-auth-config';
 
-import { Download } from '../../src';
+import { Download, LogLevel } from '../../src';
 import { Environments as TestsConfigs } from '../configs';
 import { uploadFolder } from '../helper';
 import { getContext } from '../utils/context';
@@ -25,7 +25,7 @@ for (let testConfig of TestsConfigs) {
       getContext(testConfig.configPath)
         .then((ctx) => {
           context = ctx;
-          download = new Download(ctx.authOptions);
+          download = new Download(ctx.authOptions, { logLevel: LogLevel.Off });
           return uploadFolder(
             context.siteUrl,
             context.authOptions,
