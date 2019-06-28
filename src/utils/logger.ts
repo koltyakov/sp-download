@@ -9,7 +9,11 @@ export const enum LogLevel {
 
 export class Logger {
 
-  constructor(public level: LogLevel | number = LogLevel.Info) { /**/ }
+  private level?: LogLevel;
+
+  constructor(level?: LogLevel) {
+    this.level = typeof level !== 'undefined' ? level : LogLevel.Info;
+  }
 
   public debug(...args: any[]) {
     if (this.level >= LogLevel.Debug) {
