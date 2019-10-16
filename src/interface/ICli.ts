@@ -4,4 +4,5 @@ export interface IDownloadArgv {
   conf?: string;
   site?: string;
   ondemand?: string;
+  logLevel?: string;
 }

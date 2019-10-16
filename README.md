@@ -12,8 +12,7 @@
 ## Supported SharePoint versions
 
 - SharePoint Online
-- SharePoint 2013
-- SharePoint 2016
+- SharePoint 2013/2016/2019
 
 ## Features
 
@@ -65,6 +64,7 @@ sp-download -h
 | -c | --conf [value] | Path to private configuration file |
 | -s | --site [value] | SharePoint SPWeb url, optional, default is requested based on `url` |
 | -d | --ondemand | On-Demand auth request, optional |
+| -l | --logLevel [value] | Log level: Debug = 5, Verbose = 4, Info = 3 (default), Warning = 2, Error = 1, Off = 0 |
 | -h | --help | output usage information |
 
 ### In Node.js applications
@@ -96,10 +96,10 @@ let filePathToDownload: string = 'https://contoso.sharepoint.com/sites/site/lib/
 let saveToPath: string = './download';
 
 download.downloadFile(filePathToDownload, saveToPath)
-  .then(savedToPath => {
+  .then((savedToPath) => {
     console.log(`${argv.url} has been downloaded to ${savedToPath}`);
   })
-  .catch(error => {
+  .catch((error) => {
     console.log(error);
   });
 ```
@@ -119,10 +119,10 @@ let filePathToDownload = 'https://contoso.sharepoint.com/sites/site/lib/folder/f
 let saveToPath = './download';
 
 download.downloadFile(filePathToDownload, saveToPath)
-  .then(savedToPath => {
+  .then((savedToPath) => {
     console.log(`${argv.url} has been downloaded to ${savedToPath}`);
   })
-  .catch(error => {
+  .catch((error) => {
     console.log(error);
   });
 ```
