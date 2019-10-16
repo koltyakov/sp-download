@@ -16,35 +16,35 @@ export class Logger {
   }
 
   public debug(...args: any[]) {
-    if (this.level >= LogLevel.Debug) {
+    if (this.level >= LogLevel.Debug && this.level !== LogLevel.Off) {
       // tslint:disable-next-line:no-console
       console.log(...args);
     }
   }
 
   public verbose(...args: any[]) {
-    if (this.level >= LogLevel.Verbose) {
+    if (this.level >= LogLevel.Verbose && this.level !== LogLevel.Off) {
       // tslint:disable-next-line:no-console
       console.log(...args);
     }
   }
 
   public info(...args: any[]) {
-    if (this.level >= LogLevel.Info) {
+    if (this.level >= LogLevel.Info && this.level !== LogLevel.Off) {
       // tslint:disable-next-line:no-console
       console.log(...args);
     }
   }
 
   public warning(...args: any[]) {
-    if (this.level >= LogLevel.Warning) {
+    if (this.level >= LogLevel.Warning && this.level !== LogLevel.Off) {
       // tslint:disable-next-line:no-console
       console.log(...args);
     }
   }
 
   public error(...args: any[]) {
-    if (this.level >= LogLevel.Error) {
+    if (this.level >= LogLevel.Error && this.level !== LogLevel.Off) {
       // tslint:disable-next-line:no-console
       console.log(...args);
     }
