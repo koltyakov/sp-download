@@ -8,7 +8,7 @@ import * as https from 'https';
 import * as colors from 'colors';
 import * as request from 'request';
 
-import { Logger, LogLevel } from '../utils/logger';
+import { Logger, LogLevel, resolveLogLevel } from '../utils/logger';
 import { IDownloadOptions } from '../interface/IDownload';
 
 const isUrlHttps: any = (url: string): boolean => {
@@ -24,7 +24,7 @@ export class Download {
 
   constructor (context: IAuthOptions, options: IDownloadOptions = {}) {
     this.initContext(context);
-    this.logger = new Logger(options.logLevel || LogLevel.Info);
+    this.logger = new Logger(resolveLogLevel(options.logLevel));
   }
 
   public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {

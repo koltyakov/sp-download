@@ -52,13 +52,13 @@ export class Logger {
 
 }
 
-export const resolveLogLevel = (levelSrt: string): LogLevel => {
+export const resolveLogLevel = (levelSrt: string | number = ''): LogLevel => {
   const levels = ['Off', 'Error', 'Warning', 'Info', 'Verbose', 'Debug'].map((n) => n.toLowerCase());
   let l: LogLevel = 3; // default
-  if (levels.indexOf(levelSrt.toLowerCase()) !== -1) {
-    l = levels.indexOf(levelSrt.toLowerCase());
+  if (levels.indexOf(`${levelSrt}`.toLowerCase()) !== -1) {
+    l = levels.indexOf(`${levelSrt}`.toLowerCase());
   } else {
-    const ll = parseInt(levelSrt, 10);
+    const ll = parseInt(`${levelSrt}`, 10);
     if (ll >= 0 && ll <= levels.length - 1) {
       l = ll;
     }
@@ -66,4 +66,4 @@ export const resolveLogLevel = (levelSrt: string): LogLevel => {
   return l;
 };
 
-export const logger = new Logger(resolveLogLevel(process.env.LOG_LEVEL || '3'));
+export const logger = new Logger(resolveLogLevel(process.env.LOG_LEVEL));

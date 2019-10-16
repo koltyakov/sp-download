@@ -11,7 +11,7 @@ import { Logger, resolveLogLevel } from './utils/logger';
 import { IDownloadArgv } from './interface/ICli';
 
 program
-  .version('1.0.0')
+  .version('1.1.1')
   .usage('--url=<file ...> [options]')
   .option('-u, --url [value]', 'Full path to the file in SharePoint, required')
   .option('-o, --out [value]', 'Local directory or path to file where downloaded file should be saved, optional, default is `./`')
