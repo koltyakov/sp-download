@@ -8,7 +8,7 @@ import * as https from 'https';
 import * as colors from 'colors';
 import * as request from 'request';
 
-import { Logger, LogLevel, resolveLogLevel } from '../utils/logger';
+import { Logger, resolveLogLevel } from '../utils/logger';
 import { IDownloadOptions } from '../interface/IDownload';
 
 const isUrlHttps: any = (url: string): boolean => {
@@ -27,100 +27,61 @@ export class Download {
     this.logger = new Logger(resolveLogLevel(options.logLevel));
   }
 
-  public downloadFile = (spFileAbsolutePath: string, saveTo: string = './'): Promise<any> => {
+  public downloadFile = async (spFileAbsolutePath: string, saveTo: string = './'): Promise<string> => {
     this.logger.info(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
     const childUrlArr = spFileAbsolutePath.split('/');
     childUrlArr.pop();
     const childUrl = childUrlArr.join('/');
-    return this.getWebByAnyChildUrl(childUrl)
-      .then((web) => {
-        const baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
-        const spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
-        // return this.downloadFileFromSite(web.Url, spRelativeFilePath, saveTo);
-        return this.downloadFileAsStream(web.Url, spRelativeFilePath, saveTo);
-      });
-  }
-
-  public downloadFileFromSite = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<any> => {
-    this.logger.info(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
-    return this.downloadFileAsStream(siteUrl, spRelativeFilePath, saveTo);
-    // // Download using sp-request, without streaming, consumes lots of memory in case of large files
-    // return new Promise((resolve, reject) => {
-    //     const restUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/OpenBinaryStream` +
-    //                   `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
-
-    //     const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
-    //     const saveFolderPath = path.dirname(saveFilePath);
-
-    //     this.spr.get(restUrl, { encoding: null })
-    //         .then(response => {
-    //             if (/.json$/.test(saveFilePath)) {
-    //                 response.body = JSON.stringify(response.body, null, 4);
-    //             }
-    //             if (/.map$/.test(saveFilePath)) {
-    //                 response.body = JSON.stringify(response.body);
-    //             }
-    //             mkdirp(saveFolderPath, err => {
-    //                 // tslint:disable-next-line:no-shadowed-variable
-    //                 fs.writeFile(saveFilePath, response.body, err => {
-    //                     if (err) {
-    //                         throw err;
-    //                     }
-    //                     resolve(saveFilePath);
-    //                 });
-    //             });
-    //         })
-    //         .catch(err => {
-    //             reject(err.message);
-    //         });
-    // });
-  }
-
-  private downloadFileAsStream = (siteUrl: string, spRelativeFilePath: string, saveTo: string = './') => {
+    const web = await this.getWebByAnyChildUrl(childUrl);
+    const baseHostPath = web.Url.replace(web.ServerRelativeUrl, '');
+    const spRelativeFilePath = spFileAbsolutePath.replace(baseHostPath, '');
+    const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+    const saveFolderPath = path.dirname(saveFilePath);
+    await mkdirp(saveFolderPath);
+    const req = await this.downloadFileAsStream(web.Url, spRelativeFilePath);
     return new Promise((resolve, reject) => {
-
-      let endpointUrl: string;
-
-      if (spRelativeFilePath.indexOf('/_vti_history/') !== -1) {
-        const hostUrl = siteUrl.replace('://', '___').split('/')[0].replace('___', '://');
-        endpointUrl = `${hostUrl}${encodeURIComponent(spRelativeFilePath).replace(/%2F/g, '/')}`;
-      } else {
-        endpointUrl = `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/$value` +
-          `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
-      }
-
-      const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
-      const saveFolderPath = path.dirname(saveFilePath);
-
-      mkdirp(saveFolderPath, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        getAuth(siteUrl, this.context).then((auth) => {
-
-          const options: request.OptionsWithUrl = {
-            url: endpointUrl,
-            // method: 'GET',
-            headers: {
-              ...auth.headers,
-              'User-Agent': 'sp-download'
-            },
-            encoding: null,
-            strictSSL: false,
-            gzip: true,
-            agent: isUrlHttps(siteUrl) ? this.agent : undefined,
-            ...auth.options
-          };
-
-          request.get(options)
-            .pipe(fs.createWriteStream(saveFilePath))
-            .on('error', reject)
-            .on('finish', () => resolve(saveFilePath));
-
-        }).catch(reject);
-      });
-
+      req.pipe(fs.createWriteStream(saveFilePath))
+        .on('error', reject)
+        .on('finish', () => resolve(saveFilePath));
     });
+  }
+
+  public downloadFileFromSite = async (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<string> => {
+    this.logger.info(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
+    const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
+    const saveFolderPath = path.dirname(saveFilePath);
+    await mkdirp(saveFolderPath);
+    const req = await this.downloadFileAsStream(siteUrl, spRelativeFilePath);
+    return new Promise((resolve, reject) => {
+      req.pipe(fs.createWriteStream(saveFilePath))
+        .on('error', reject)
+        .on('finish', () => resolve(saveFilePath));
+    });
+  }
+
+  public downloadFileAsStream = async (siteUrl: string, spRelativeFilePath: string): Promise<request.Request> => {
+    const hostUrl = siteUrl.split('/').slice(0, 3).join('/');
+    const endpointUrl = spRelativeFilePath.indexOf('/_vti_history/') !== -1
+      ? `${hostUrl}${encodeURIComponent(spRelativeFilePath).replace(/%2F/g, '/')}`
+      : `${siteUrl}/_api/Web/GetFileByServerRelativeUrl(@FileServerRelativeUrl)/$value` +
+        `?@FileServerRelativeUrl='${encodeURIComponent(spRelativeFilePath)}'`;
+
+    const auth = await Promise.resolve(getAuth(siteUrl, this.context));
+
+    const options: request.OptionsWithUrl = {
+      url: endpointUrl,
+      headers: {
+        ...auth.headers,
+        'User-Agent': 'sp-download'
+      },
+      encoding: null,
+      strictSSL: false,
+      gzip: true,
+      agent: isUrlHttps(siteUrl) ? this.agent : undefined,
+      ...auth.options
+    };
+
+    return request.get(options);
   }
 
   private getWebByAnyChildUrl = (anyChildUrl: string): Promise<any> => {
