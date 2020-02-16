@@ -16,8 +16,8 @@
 
 ## Features
 
-- CLI && A library scenarious
-- Support robust authentication scenarious
+- CLI && A library scenarios
+- Support robust authentication scenarios
 - Streaming download
   - download files of any sizes
   - no memory consumption growth
@@ -129,7 +129,7 @@ download.downloadFile(filePathToDownload, saveToPath)
 
 ## Authentication settings
 
-The library provides wizard-like approach for building and managing config files for [`node-sp-auth`](https://github.com/s-KaiNet/node-sp-auth) (Node.js to SharePoint unattended http authentication).
+The library provides a wizard-like approach for building and managing config files for [`node-sp-auth`](https://github.com/s-KaiNet/node-sp-auth) (Node.js to SharePoint unattended HTTP authentication).
 
 - SharePoint On-Premise (2013, 2016):
   - User credentials (NTLM)
