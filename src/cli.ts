@@ -76,7 +76,7 @@ const download = (context: any, params: IDownloadArgv): Promise<void> => {
 
   } else {
 
-    let authConfSettings: IAuthConfigSettings = {
+    const authConfSettings: IAuthConfigSettings = {
       configPath: path.resolve(argv.conf || './config/private.json'),
       defaultConfigPath: path.join(__dirname, './config/default.json'),
       encryptPassword: true,

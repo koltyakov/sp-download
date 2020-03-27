@@ -83,7 +83,7 @@ yarn add sp-download
 
 #### Minimal setup (TypeScript)
 
-```javascript
+```typescript
 import { Download, IAuthOptions } from 'sp-download';
 
 const authContext: IAuthOptions = {
