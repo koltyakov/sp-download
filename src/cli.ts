@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-// import * as minimist from 'minimist';
-import * as program from 'commander';
-import { AuthConfig, IAuthConfigSettings } from 'node-sp-auth-config';
+import { program } from 'commander';
+import { AuthConfig, IAuthConfigSettings, IAuthContext } from 'node-sp-auth-config';
 import * as path from 'path';
 import * as colors from 'colors';
 
@@ -11,7 +10,7 @@ import { Logger, resolveLogLevel } from './utils/logger';
 import { IDownloadArgv } from './interface/ICli';
 
 program
-  .version('1.1.1')
+  .version('2.0.0')
   .usage('--url=<file ...> [options]')
   .option('-u, --url [value]', 'Full path to the file in SharePoint, required')
   .option('-o, --out [value]', 'Local directory or path to file where downloaded file should be saved, optional, default is `./`')
@@ -21,13 +20,13 @@ program
   .option('-l, --logLevel [value]', 'Log level: Debug = 5, Verbose = 4, Info = 3 (default), Warning = 2, Error = 1, Off = 0', '3')
   .parse(process.argv);
 
-const argv: IDownloadArgv = program as any;
+const argv = program as unknown as IDownloadArgv;
 
 const logger = new Logger(resolveLogLevel(argv.logLevel));
 
-const download = (context: any, params: IDownloadArgv): Promise<void> => {
+const download = (context: IAuthContext, params: IDownloadArgv): Promise<void> => {
   const { downloadFile, downloadFileFromSite } = new Download(context.authOptions, {
-    ...argv as any,
+    ...argv,
     logLevel: resolveLogLevel(argv.logLevel)
   });
   if (typeof params.site === 'undefined') {
@@ -69,7 +68,8 @@ const download = (context: any, params: IDownloadArgv): Promise<void> => {
 
   if ((argv.ondemand || '').toLowerCase() === 'true') {
 
-    download({ ondemand: true }, argv)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    download({ ondemand: true } as any, argv)
       .catch((error) => {
         logger.error(colors.red(`${colors.bold('Error:')} ${error}`));
       });

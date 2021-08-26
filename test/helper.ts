@@ -1,11 +1,12 @@
 import { spsave, ICoreOptions, IFileContentOptions } from 'spsave';
 import * as fs from 'fs';
 import * as path from 'path';
+import { IAuthOptions } from 'node-sp-auth';
 
 export const walkSync = (dir: string, filelist: string[] = []): string[] => {
-  let files: string[] = fs.readdirSync(dir);
-  files.forEach(file => {
-    let filePath = path.join(dir, file);
+  const files: string[] = fs.readdirSync(dir);
+  files.forEach((file) => {
+    const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
       filelist = walkSync(filePath, filelist);
     } else {
@@ -15,7 +16,7 @@ export const walkSync = (dir: string, filelist: string[] = []): string[] => {
   return filelist;
 };
 
-export const uploadFolder = (siteUrl: string, authOptions: any, fromFolder: string, toFolder: string): Promise<any> => {
+export const uploadFolder = (siteUrl: string, authOptions: IAuthOptions, fromFolder: string, toFolder: string): Promise<string> => {
 
   async function upload () {
     const coreOptions: ICoreOptions = {
@@ -24,8 +25,8 @@ export const uploadFolder = (siteUrl: string, authOptions: any, fromFolder: stri
       checkin: true,
       checkinType: 1
     };
-    let files = await walkSync(fromFolder, []);
-    for (let file of files) {
+    const files = await walkSync(fromFolder, []);
+    for (const file of files) {
       const fileOptions: IFileContentOptions = {
         folder: `${toFolder}/${path.dirname(path.relative(fromFolder, file)).replace(/\\/g, '/')}`,
         fileName: path.basename(file),
@@ -33,7 +34,7 @@ export const uploadFolder = (siteUrl: string, authOptions: any, fromFolder: stri
       };
       // Suppress spsave output
       // tslint:disable-next-line:no-empty
-      let log = console.log; console.log = () => { };
+      const log = console.log; console.log = () => null;
       await spsave(coreOptions, authOptions, fileOptions)
         .then(() => {
           console.log = log;

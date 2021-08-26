@@ -1,0 +1,8 @@
+{
+  "require": "ts-node/register",
+  "watch-extensions": [".spec.ts"],
+  "extension": [".spec.ts"],
+  "watch-files": ["**/*.spec.ts"],
+  "opts": false,
+  "recursive": true
+}

@@ -6,7 +6,7 @@ import { Environments } from './configs';
 
 export async function checkOrPromptForIntegrationConfigCreds(): Promise<void> {
 
-  for (let testConfig of Environments) {
+  for (const testConfig of Environments) {
     console.log(`\n=== ${colors.bold.yellow(`${testConfig.environmentName} Credentials`)} ===\n`);
     await (new SPAuthConfigirator({
       configPath: testConfig.configPath
@@ -18,4 +18,6 @@ export async function checkOrPromptForIntegrationConfigCreds(): Promise<void> {
 
 }
 
-checkOrPromptForIntegrationConfigCreds();
+if (process.argv.indexOf('--init') !== -1) {
+  checkOrPromptForIntegrationConfigCreds();
+}

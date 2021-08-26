@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as mocha from 'mocha';
 import * as path from 'path';
 import { IAuthContext } from 'node-sp-auth-config';
@@ -13,7 +14,7 @@ const testVariables = {
   downloadPath: './download'
 };
 
-for (let testConfig of TestsConfigs) {
+for (const testConfig of TestsConfigs) {
 
   describe(`Run tests in ${testConfig.environmentName}`, () => {
 
@@ -40,7 +41,7 @@ for (let testConfig of TestsConfigs) {
     it(`should download a file with output as a folder path`, function (done: Mocha.Done): void {
       this.timeout(30 * 1000);
       download.downloadFile(
-        `${(context as any).siteUrl}/${testVariables.rootFolderPath}/Folder1/text.txt`,
+        `${context.siteUrl}/${testVariables.rootFolderPath}/Folder1/text.txt`,
         testVariables.downloadPath
       ).then(() => done()).catch(done);
     });

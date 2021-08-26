@@ -1,17 +1,18 @@
 import { create as createRequest, ISPRequest } from 'sp-request';
 import { getAuth, IAuthOptions } from 'node-sp-auth';
-import { AuthConfig } from 'node-sp-auth-config';
+import { AuthConfig, IAuthContext } from 'node-sp-auth-config';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as https from 'https';
 import * as colors from 'colors';
 import * as request from 'request';
+import { HTTPError } from 'got';
 
 import { Logger, resolveLogLevel } from '../utils/logger';
 import { IDownloadOptions } from '../interface/IDownload';
 
-const isUrlHttps: any = (url: string): boolean => {
+const isUrlHttps = (url: string): boolean => {
   return url.split('://')[0].toLowerCase() === 'https';
 };
 
@@ -27,7 +28,7 @@ export class Download {
     this.logger = new Logger(resolveLogLevel(options.logLevel));
   }
 
-  public downloadFile = async (spFileAbsolutePath: string, saveTo: string = './'): Promise<string> => {
+  public downloadFile = async (spFileAbsolutePath: string, saveTo = './'): Promise<string> => {
     this.logger.info(colors.gray(`Downloading: ${colors.green(spFileAbsolutePath)}`));
     const childUrlArr = spFileAbsolutePath.split('/');
     childUrlArr.pop();
@@ -46,7 +47,7 @@ export class Download {
     });
   }
 
-  public downloadFileFromSite = async (siteUrl: string, spRelativeFilePath: string, saveTo: string = './'): Promise<string> => {
+  public downloadFileFromSite = async (siteUrl: string, spRelativeFilePath: string, saveTo = './'): Promise<string> => {
     this.logger.info(colors.gray(`Downloading: ${colors.green(spRelativeFilePath)}`));
     const saveFilePath = this.getSaveFilePath(saveTo, spRelativeFilePath);
     const saveFolderPath = path.dirname(saveFilePath);
@@ -84,13 +85,18 @@ export class Download {
     return request.get(options);
   }
 
-  private getWebByAnyChildUrl = (anyChildUrl: string): Promise<any> => {
+  private getWebByAnyChildUrl = (anyChildUrl: string): Promise<{ Url: string; ServerRelativeUrl: string }> => {
     return new Promise((resolve, reject) => {
       const restUrl = `${anyChildUrl}/_api/web?$select=Url,ServerRelativeUrl`;
-      this.spr.get(restUrl)
+      this.spr.get(restUrl,{
+        headers: {
+          Accept: 'application/json;odata=verbose'
+        }
+      })
         .then((response) => resolve(response.body.d))
-        .catch((err) => {
-          if (err.statusCode === 404) {
+        .catch((err: HTTPError) => {
+          const statusCode = err instanceof HTTPError ? err.response.statusCode : '500';
+          if (statusCode === 404) {
             const childUrlArr = anyChildUrl.split('/');
             childUrlArr.pop();
             const childUrl = childUrlArr.join('/');
@@ -99,13 +105,13 @@ export class Download {
             } else {
               return resolve(this.getWebByAnyChildUrl(childUrl));
             }
-          } else if (err.statusCode === 401) {
+          } else if (statusCode === 401) {
             this.logger.error(colors.red('401, Access Denied'));
             this.promptForCreds()
               .then(() => resolve(this.getWebByAnyChildUrl(anyChildUrl)))
               .catch(reject);
           } else {
-            return reject(err.message);
+            return reject(err);
           }
         });
     });
@@ -121,17 +127,15 @@ export class Download {
     });
   }
 
-  private promptForCreds = (): Promise<any> => {
-    return new AuthConfig({
+  private promptForCreds = async (): Promise<IAuthContext> => {
+    const context = await new AuthConfig({
       authOptions: this.context,
       forcePrompts: true
     })
-      .getContext()
-      .then((context) => {
-        this.initContext(context.authOptions);
-        this.logger.info(colors.gray('Trying to download with new creds...'));
-        return context;
-      });
+      .getContext();
+    this.initContext(context.authOptions);
+    this.logger.info(colors.gray('Trying to download with new creds...'));
+    return context;
   }
 
   private getSaveFilePath = (saveTo: string, spRelativeFilePath: string): string => {
